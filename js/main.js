@@ -11,4 +11,18 @@ console.log(account_key);
 const key = new StorageSharedKeyCredential(account_name, account_key);
 const blob_client = new BlobServiceClient(`https://${account_name}.blob.core.windows.net`, key);
 
-console.log(blob_client);
+// console.log(blob_client);
+
+async function containerInventory(){
+    let containers = blob_client.listContainers();
+    for await (const container of containers) {
+        console.log(container.name);
+        const container_client = blob_client.getContainerClient(container.name);
+        let blobs = container_client.listBlobsFlat(container.name);
+        for await (const blob of blobs){
+            console.log(` -> ${blob.name}`);
+        }
+    }
+}
+
+containerInventory();
